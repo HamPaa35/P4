@@ -1,3 +1,4 @@
+%% AudioProcessing
 recObj = audiorecorder;
 
 while(true)
@@ -17,9 +18,7 @@ subplot(2,1,1)
 plot(t,audioInMono)
 ylabel('Amplitude') 
 end
-%%
-hghghghgghg
 
 
+%% Supervised learning
 
-egfugfurgfurgfrufgrufgr
