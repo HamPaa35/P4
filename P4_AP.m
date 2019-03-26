@@ -21,4 +21,6 @@ end
 
 
 %% Supervised learning
-
+asljgbkeabgr
+erg
+ewr
