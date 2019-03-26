@@ -17,9 +17,3 @@ subplot(2,1,1)
 plot(t,audioInMono)
 ylabel('Amplitude') 
 end
-
-
-
-
-
-egfugfurgfurgfrufgrufgr
