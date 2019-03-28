@@ -21,4 +21,12 @@ end
 
 
 %% Supervised learning
-ghghghghghghghghghghghghghghghgh
+
+GMMTestValues = importdata('bimodal_example.csv')
+histfit(GMMTestValues, 20)
+GMModel = fitgmdist(GMMTestValues, 103)
+gmPDF = @(x)reshape(pdf(GMModel,x(:)),size(x)); 
+
+fsurf(gmPDF,[-10 10])
+
+
