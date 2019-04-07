@@ -18,6 +18,8 @@ xlabel('Frequency Values')
 t = (0:length(audioInMono)-1)/44100;
 subplot(2,1,1)
 plot(t,audioInMono)
+
+ylabel('Amplitude') 
 ylabel('Amplitude')
 xlabel('Time')
 end
