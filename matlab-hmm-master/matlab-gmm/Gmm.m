@@ -1,4 +1,4 @@
-    % SUMMARY: Gmm algorithm, using EM algorithm
+% SUMMARY: Gmm algorithm, using EM algorithm
 %          Kmeans complexity: O(mnkpi), m:restart_num,
 %          n:sample_num, k:center_num, p:dimension, i:iter_num
 %          Gmm complexity: O(nkpi), definition of nkpi is same as above
