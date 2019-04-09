@@ -1,9 +1,9 @@
-    % SUMMARY: Gmm algorithm, using EM algorithm
+% SUMMARY: Gmm algorithm, using EM algorithm
 %          Kmeans complexity: O(mnkpi), m:restart_num,
 %          n:sample_num, k:center_num, p:dimension, i:iter_num
 %          Gmm complexity: O(nkpi), definition of nkpi is same as above
-% OTHERS:  It seems restart_num of kmeans is not important. I am not sure. Use 1 is OK.  
-%          Because of local minimum, so try to run several times. 
+% OTHERS:  It seems restart_num of kmeans is not important. I am not sure. Use 1 is OK.
+%          Because of local minimum, so try to run several times.
 % AUTHOR:  QIUQIANG KONG, Queen Mary University of London
 % Created: 16-09-2015
 % Modified: 18-09-2015 Add varargin parameters
@@ -17,16 +17,16 @@
 %           kmeans
 % -----------------------------------------------------------
 % Remarks: need voicebox (kmeans.m), error_ellipse.m
-% input:   
+% input:
 %   X      size: N*p
-%   mix    num of mix 
+%   mix    num of mix
 % varargin input:
 %   restart_num     the times of restart kmeans
 %   iter_num        the maximum of EM iteration
 %   cov_type        'full' or 'diag'
 %   cov_thresh      the minimum of cov
 % output:
-%   pi              size: M; dim 1: mix num 
+%   pi              size: M; dim 1: mix num
 %   mu              size: p*M; dim 1: feature dim, dim 2: mix num
 %   Sigma           size: p*p*M; dim 1,2: feature dim, dim 3: mix num
 %   loglik          log likelihood of current model
@@ -115,7 +115,7 @@ M = length(prior);  % mix num
 [N,p] = size(X);
 pre_ll = -inf;
 
-for k = 1:iter_num    
+for k = 1:iter_num
     % E step
     p_xn_given_zn = zeros(N, M);
     for i1 = 1:M
@@ -141,17 +141,17 @@ for k = 1:iter_num
         end
         prior = Nk / N;
     end
-    
+
     % Get likelihood
     p_xn = zeros(N,1);
     for i1 = 1:M
         p_xn = p_xn + prior(i1) * mvnpdf(X, mu(:,i1)', Sigma(:,:,i1));
     end
     loglik = sum(log(p_xn));
-    
+
     if (loglik-pre_ll<log(1.0001)) break;
     else pre_ll = loglik; end
-    
+
     % Debug. draw contour step by step
 %     DebugPlot(X, gamma, mu, Sigma);
 end
