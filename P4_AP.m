@@ -1,5 +1,8 @@
 %% AudioProcessing
-recObj = audiorecorder(44100, 8, 1);
+fs=8000;
+framesize = 30/1000*fs;
+
+recObj = audiorecorder(fs, 8, 1);
  
 
 
@@ -16,10 +19,13 @@ data = getaudiodata(recObj, 'double');
 %        }
 %    
 % end
-testArr = zeros(1323,1);
-for i = 0:44100/1323
+
+
+
+testArr = zeros(framesize,1);
+for i = 0:fs/framesize
    if i < 33
-    test = data(i*1323+1:i*1323+1323); 
+    test = data(i*framesize+1:i*framesize+framesize); 
     testArr = [testArr test];
    end
 end
