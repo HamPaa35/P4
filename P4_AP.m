@@ -13,6 +13,14 @@ disp('End of Recording.');
 
 data = getaudiodata(recObj, 'double');
 
+f0 = pitch(data, fs);
+hr = harmonicRatio(data, fs);
+centroid = spectralCentroid(data, fs);
+flux = spectralFlux(data,fs);
+rolloffPoint = spectralRolloffPoint(data,fs);
+flatness = spectralFlatness(data,fs);
+
+
 % if data < data.length 
 %    for (a[i] = 0; i*1323 < data; i++) {
 %        testData = data(1323*i:1323*i+1323);
@@ -35,13 +43,10 @@ subplot(2,1,2)
 plot(abs(data_fft(:,1)));
 audioInMono = mean(data,2);
 
-t = (0:length(audioInMono)-1)/44100;
+t = (0:length(audioInMono)-1)/fs;
 subplot(2,1,1)
 %0p0lot(t,audioInMono)
 ylabel('Amplitude')
-fid=fopen('StressTestSheet.txt', 'w');
-fmt = '%5d %5d %5d %5d\n';
-fprintf(fid,fmt,data_fft);
 fclose(fid);
 
 
