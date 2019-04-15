@@ -1,8 +1,8 @@
-x% SUMMARY:  using log viterbi decode to find the best path. Modified from
+% SUMMARY:  using log viterbi decode to find the best path. Modified from
 %           ViterbiDecode.m
 %           ln V1k = ln p(x1|z1k) + ln p(z1k)
 %           Vnk = max{j} (ln Vn-1,j + ln p(znk|zn-1,j) + ln p(xn|znj))
-%           save j every step, this is the path.
+%           save j every step, this is the path. 
 % AUTHOR:   QIUQIANG KONG
 % Created:  21-11-2015
 % -----------------------------------------------------------

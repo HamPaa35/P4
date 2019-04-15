@@ -1,21 +1,12 @@
 %% AudioProcessing
 recObj = audiorecorder(44100, 8, 1);
- 
-
 
 disp('Start speaking.');
 recordblocking(recObj, 1);
 disp('End of Recording.');
 
-
 data = getaudiodata(recObj, 'double');
 
-% if data < data.length 
-%    for (a[i] = 0; i*1323 < data; i++) {
-%        testData = data(1323*i:1323*i+1323);
-%        }
-%    
-% end
 testArr = zeros(1323,1);
 for i = 0:44100/1323
    if i < 33
@@ -36,10 +27,7 @@ ylabel('Amplitude')
 fid=fopen('StressTestSheet.txt', 'w');
 fmt = '%5d %5d %5d %5d\n';
 fprintf(fid,fmt,data_fft);
-fclose(fid);
-
-
-
+fclose(fid); 
 
 %% Supervised learning
 
@@ -50,8 +38,10 @@ gmPDF = @(x)reshape(pdf(GMModel,x(:)),size(x));
 
 fsurf(gmPDF,[-10, 10])
 
+
 %% test
 % Generate Data
+addpath(genpath("./matlab-hmm-master"))
 for i1 = 1:2
     X1 = mvnrnd([0,0], [0.5, 0.2; 0.2, 0.3]/5, 20);
     X2 = mvnrnd([0,2], [0.3, -0.2; -0.2, 0.5]/5, 30);
@@ -69,12 +59,15 @@ end
 Xall = cell2mat(Data');
 scatter(Xall(:,1), Xall(:,2), '.'); hold on
 
+test = {GMMTestValues(1:50), GMMTestValues(51:100)}
+
 Q = 3;      % state num
 M = 2;      % mix num
 p = 2;      % feature dim
 
 % Train Gmm-Hmm model
-[p_start, A, phi, loglik] = ChmmGmm(Data, Q, M);
+[p_start, A, phi, loglik] = ChmmGmm(test, Q, M);
+[tp_start, tA, tphi, tloglik] = ChmmGmm(Data, Q, M);
 % [p_start, A, phi, loglik] = ChmmGmm(Data, Q, M, 'p_start0', p_start0, 'A0', A0, 'phi0', phi0, 'cov_type', 'diag', 'cov_thresh', 1e-1)
 
 % Calculate p(X) & vertibi decode
@@ -82,12 +75,11 @@ logp_xn_given_zn = Gmm_logp_xn_given_zn(Data{1}, phi);
 [~,~, loglik] = LogForwardBackward(logp_xn_given_zn, p_start, A);
 path = LogViterbiDecode(logp_xn_given_zn, p_start, A);
 
-p_start
-A
-phi
-loglik
-path'
-
+p_start;
+A;
+phi;
+loglik;
+path';
 
 color = {'r', 'g', 'k'};
 for q = 1:Q
@@ -95,4 +87,3 @@ for q = 1:Q
         error_ellipse(phi.Sigma(:,:,m,q), phi.mu(:,m,q), 'style', color{q}); hold on
     end
 end
-

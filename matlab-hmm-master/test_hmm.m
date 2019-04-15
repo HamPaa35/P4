@@ -11,7 +11,7 @@ addpath('matlab-gmm')
 % pseudo ranom
 % rng(0)
 
-choose = 1;     % can be 1, 2, 3 or 4
+choose = 4;     % can be 1, 2, 3 or 4
 
 switch choose
     case 1
