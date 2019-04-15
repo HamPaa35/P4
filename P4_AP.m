@@ -18,7 +18,9 @@ centroid = spectralCentroid(data, fs);
 flux = spectralFlux(data,fs);
 rolloffPoint = spectralRolloffPoint(data,fs);
 flatness = spectralFlatness(data,fs);
+data_fft = fft(data);
 
+C = {f0,hr,centroid,flux,rolloffPoint,flatness,data_fft};
 
 % if data < data.length
 %    for (a[i] = 0; i*1323 < data; i++) {
@@ -36,7 +38,7 @@ for i = 0:fs/framesize
     testArr = [testArr test];
    end
 end
-data_fft = fft(data);
+
 subplot(2,1,2)
 %plot(data_fft)
 plot(abs(data_fft(:,1)));
