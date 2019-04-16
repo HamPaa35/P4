@@ -20,6 +20,8 @@ rolloffPoint = spectralRolloffPoint(data,fs);
 flatness = spectralFlatness(data,fs);
 data_fft = fft(data);
 
+C2 = [hr,centroid,flux,rolloffPoint,flatness];
+
 C = {f0,hr,centroid,flux,rolloffPoint,flatness,data_fft};
 
 % if data < data.length
@@ -49,10 +51,6 @@ subplot(2,1,1)
 %0p0lot(t,audioInMono)
 ylabel('Amplitude')
 fclose(fid);
-
-
-
-
 %% Supervised learning
 
 GMMTestValues = importdata('bimodal_example.csv')
@@ -82,20 +80,39 @@ for i1 = 3:4
     Data{i1} = X;
 end
 Xall = cell2mat(Data');
-scatter(Xall(:,1), Xall(:,2), '.'); hold on
 
 test = {GMMTestValues(1:50), GMMTestValues(51:100)};
 delAfTest = {10, 11};
 
-Q = 2;      % state num
+Q = 3;      % state num
 M = 2;      % mix num
-p = 2;      % feature dim
-[p_start, A, phi, loglik] = ChmmGmm(test, Q, M);
-[tp_start, tA, tphi, tloglik] = ChmmGmm(Data, Q, M);
-%% Eval model vs. data
-CalOfLoglik(Data, phi, tphi, p_start, tp_start, A, tA)
+[p_start, A, phi, loglik] = ChmmGmm(cTest, Q, M);
+[tp_start, tA, tphi, tloglik] = ChmmGmm(cTest2, Q, M);
+disp("Trained")
+model_1 = {p_start, A, phi};
+model_2 = {tp_start, tA, tphi};
 
-function CalOfLoglik(evalData, model_1_phi, model_2_phi, model_1_p_start, model_2_p_start, model_1_A, model_2_A)
+CalOfLoglik(cTest2, model_1, model_2)
+%% Eval model vs. data
+CalOfLoglik(cTest2, model_1, model_2)
+
+function CalOfLoglik(evalData, model_l, model_2)
+    obj_num = length(evalData);
+    for r = 1:obj_num
+        logp_xn_given_zn = Gmm_logp_xn_given_zn(evalData{r}, model_l{3});
+        [~, ~, Loglik1] = LogForwardBackward(logp_xn_given_zn, model_l{1}, model_l{2});
+        logp_xn_given_znt = Gmm_logp_xn_given_zn(evalData{r}, model_2{3});
+        [~, ~, Loglik2] = LogForwardBackward(logp_xn_given_znt, model_2{1}, model_2{2});
+    end
+    if Loglik2 > Loglik1
+        disp("2")
+    end
+    if Loglik1 > Loglik2
+        disp("1")
+    end
+end
+
+function CalOfLoglik2(evalData, model_1_phi, model_2_phi, model_1_p_start, model_2_p_start, model_1_A, model_2_A)
     obj_num = length(evalData);
     for r = 1:obj_num
         logp_xn_given_zn = Gmm_logp_xn_given_zn(evalData{r}, model_1_phi);
