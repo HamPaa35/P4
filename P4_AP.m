@@ -4,7 +4,7 @@ framesize = 30/1000*fs;
 
 recObj = audiorecorder(fs, 8, 1);
 
-
+%%%%%%%%%%%mnjkn
 
 disp('Start speaking.');
 recordblocking(recObj, 1);
