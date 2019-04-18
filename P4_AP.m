@@ -1,4 +1,5 @@
 %% AudioProcessing
+[Help1,Fs] = audioread(filename, 8000)
 fs=8000;
 framesize = 30/1000*fs;
 
@@ -86,13 +87,13 @@ delAfTest = {10, 11};
 
 Q = 3;      % state num
 M = 2;      % mix num
-[p_start, A, phi, loglik] = ChmmGmm(cTest, Q, M);
-[tp_start, tA, tphi, tloglik] = ChmmGmm(cTest2, Q, M);
+[p_start, A, phi, loglik] = ChmmGmm(test, Q, M);
+[tp_start, tA, tphi, tloglik] = ChmmGmm(Data, Q, M);
 disp("Trained")
 model_1 = {p_start, A, phi};
 model_2 = {tp_start, tA, tphi};
 
-CalOfLoglik(cTest2, model_1, model_2)
+CalOfLoglik(Data, model_1, model_2)
 %% Eval model vs. data
 CalOfLoglik(cTest2, model_1, model_2)
 
