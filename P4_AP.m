@@ -3,9 +3,11 @@ addpath(genpath("./audio"))
 [Help1,Fs] = audioread('10_hjælp_Mathias.wav');
 [Help2,Fs] = audioread('help-Glerup.wav');
 [Help3,Fs] = audioread('Hjælp_Rasmus.wav');
+[Help4,Fs] = audioread('10_helps_Female.wav');
 [skrig1,Fs] = audioread('10_skrig_Mathias.wav');
 [skrig2,Fs] = audioread('screech-Glerup.wav');
 [skrig3,Fs] = audioread('Skrig_Rasmus.wav');
+[skrig4,Fs] = audioread('10_screams_Female.wav');
 
 fs=8000;
 framesize = 30/1000*fs;
@@ -19,21 +21,17 @@ recObj = audiorecorder(fs, 8, 1);
 % disp('End of Recording.');
 
 % data = getaudiodata(Help1, 'double');
-[h1hr,h1centroid,h1flux,h1rolloffPoint,h1flatness] = audioProcessing(Help1, Fs);
-h1 = [h1hr,h1centroid,h1flux,h1rolloffPoint,h1flatness];
-[h2hr,h2centroid,h2flux,h2rolloffPoint,h2flatness] = audioProcessing(Help2, Fs);
-h2 = [h2hr,h2centroid,h2flux,h2rolloffPoint,h2flatness];
-[h3hr,h3centroid,h3flux,h3rolloffPoint,h3flatness] = audioProcessing(Help3, Fs);
-h3 = [h3hr,h3centroid,h3flux,h3rolloffPoint,h3flatness];
+h1 = audioProcessing(Help1, Fs);
+h2 = audioProcessing(Help2, Fs);
+h3 = audioProcessing(Help3, Fs);
+%h4 = audioProcessing(Help4, Fs);
 
 AllH = {h1, h2, h3};
 
-[s1hr,s1centroid,s1flux,s1rolloffPoint,s1flatness] = audioProcessing(skrig1, Fs);
-s1 = [s1hr,s1centroid,s1flux,s1rolloffPoint,s1flatness];
-[s2hr,s2centroid,s2flux,s2rolloffPoint,s2flatness] = audioProcessing(skrig2, Fs);
-s2 = [s2hr,s2centroid,s2flux,s2rolloffPoint,s2flatness];
-[s3hr,s3centroid,s3flux,s3rolloffPoint,s3flatness] = audioProcessing(skrig3, Fs);
-s3 = [s3hr,s3centroid,s3flux,s3rolloffPoint,s3flatness];
+s1 = audioProcessing(skrig1, Fs);
+s2 = audioProcessing(skrig2, Fs);
+s3 = audioProcessing(skrig3, Fs);
+%s4 = audioProcessing(skrig4, Fs);
 
 AllS = {s1, s2, s3};
 
@@ -41,9 +39,9 @@ AllS = {s1, s2, s3};
 % s2 = audioProcessing(skrig2, Fs);
 % s3 = audioProcessing(skrig3, Fs);
 
-C2 = [hr,centroid,flux,rolloffPoint,flatness];
-
-C = {f0,hr,centroid,flux,rolloffPoint,flatness,data_fft};
+% C2 = [hr,centroid,flux,rolloffPoint,flatness];
+% 
+% C = {f0,hr,centroid,flux,rolloffPoint,flatness,data_fft};
 
 % if data < data.length
 %    for (a[i] = 0; i*1323 < data; i++) {
@@ -54,7 +52,7 @@ C = {f0,hr,centroid,flux,rolloffPoint,flatness,data_fft};
 
 
 
-testArr = zeros(framesize,1);
+% testArr = zeros(framesize,1);
 % for i = 0:fs/framesize
 %    if i < 33
 %     test = data(i*framesize+1:i*framesize+framesize);
@@ -74,8 +72,7 @@ testArr = zeros(framesize,1);
 % fclose(fid);
 disp("done")
 %% test zone
-[h1f0,h1hr,h1centroid,h1flux,h1rolloffPoint,h1flatness] = audioProcessing(Help1, Fs);
-
+steatzone3 = audioProcessing(skrig3, Fs);
 %% Supervised learning
 GMMTestValues = importdata('bimodal_example.csv')
 histfit(GMMTestValues)
@@ -117,28 +114,22 @@ disp("Trained")
 model_1h = {p_start, A, phi};
 model_2h = {tp_start, tA, tphi};
 %% Eval model vs. data
-[HelpTest,Fs] = audioread('test.wav');
+[HelpTest,Fs] = audioread('Skrig_Rasmus.wav');
 [skrigTest,Fs] = audioread('test_skrig.mp3');
 recObj = audiorecorder(Fs, 8, 2);
-
+% 
 disp('Start speaking.');
 recordblocking(recObj, 2);
 disp('End of Recording.');
+% 
+liveData = getaudiodata(recObj, 'double');
+Live = {audioProcessing(liveData, Fs);};
 
-data = getaudiodata(recObj, 'double');
+ht = {audioProcessing(HelpTest, Fs)};
 
-[lhr,lcentroid,lflux,lrolloffPoint,lflatness] = audioProcessing(data, Fs);
-l = [lhr,lcentroid,lflux,lrolloffPoint,lflatness];
-Live = {l};
-
-[ht1hr,ht1centroid,ht1flux,ht1rolloffPoint,ht1flatness] = audioProcessing(HelpTest, Fs);
-ht1 = [ht1hr,ht1centroid,ht1flux,ht1rolloffPoint,ht1flatness];
-ht = {ht1};
-
-[st1hr,st1centroid,st1flux,st1rolloffPoint,st1flatness] = audioProcessing(skrigTest, Fs);
-st1 = [st1hr,st1centroid,st1flux,st1rolloffPoint,st1flatness];
-st = {st1};
-CalOfLoglik(ht, model_1h, model_2h)
+st = {audioProcessing(skrigTest, Fs)};
+ 
+CalOfLoglik(Live, model_1h, model_2h)
 
 function CalOfLoglik(evalData, model_l, model_2)
     obj_num = length(evalData);
@@ -174,12 +165,20 @@ function CalOfLoglik2(evalData, model_1_phi, model_2_phi, model_1_p_start, model
     end
 end
 
-function [f0, hr,centroid,flux,rolloffPoint,flatness] = audioProcessing(soundToAnalyse, fs)
-    hr = harmonicRatio(soundToAnalyse, fs);
-    f0 = pitch(soundToAnalyse, fs);
-    centroid = spectralCentroid(soundToAnalyse, fs);
-    flux = spectralFlux(soundToAnalyse,fs);
-    rolloffPoint = spectralRolloffPoint(soundToAnalyse,fs);
-    flatness = spectralFlatness(soundToAnalyse,fs);
-%     data_fft = fft(soundToAnalyse);
+function dataInMatrix = audioProcessing(soundToAnalyse, fs)
+    data_fft = fft(soundToAnalyse);
+    data_fft = abs(data_fft(:,1));
+    hr = harmonicRatio(data_fft, fs);
+    fTemp = pitch(data_fft, fs);
+    hrSize = size(hr);
+    fTempSize = size(fTemp);
+    sizeDifference = hrSize(1) - fTempSize(1); 
+    fzeros = zeros(sizeDifference, hrSize(2));
+    f0 = [fTemp;fzeros];
+    centroid = spectralCentroid(data_fft, fs);
+    flux = spectralFlux(data_fft,fs);
+    rolloffPoint = spectralRolloffPoint(data_fft,fs);
+    flatness = spectralFlatness(data_fft,fs);
+    dataInMatrix = [f0, hr,centroid,flux,rolloffPoint,flatness];
+%     dataInCell = {dataInMatrix};
 end
