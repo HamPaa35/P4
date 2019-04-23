@@ -166,20 +166,23 @@ function CalOfLoglik2(evalData, model_1_phi, model_2_phi, model_1_p_start, model
 end
 
 function dataInMatrix = audioProcessing(soundToAnalyse, fs)
-    data_fft = fft(soundToAnalyse);
-    data_fft = abs(data_fft(:,1));
-    hr = harmonicRatio(data_fft, fs);
-    fTemp = pitch(data_fft, fs);
+    %data_fft = fft(soundToAnalyse);
+    %data_fft = abs(data_fft(:,1));
+    % Converts Stereo signals into mono signals.
+    if size(soundToAnalyse,2)>1
+        soundToAnalyse= sum(soundToAnalyse, 2) / size(soundToAnalyse, 2);
+    end
+    hr = harmonicRatio(soundToAnalyse, fs);
+    fTemp = pitch(soundToAnalyse, fs);
     hrSize = size(hr);
     fTempSize = size(fTemp);
     sizeDifference = hrSize(1) - fTempSize(1); 
     fzeros = zeros(sizeDifference, hrSize(2));
     f0 = [fTemp;fzeros];
-    centroid = spectralCentroid(data_fft, fs);
-    flux = spectralFlux(data_fft,fs);
-    rolloffPoint = spectralRolloffPoint(data_fft,fs);
-    flatness = spectralFlatness(data_fft,fs);
+    centroid = spectralCentroid(soundToAnalyse, fs);
+    flux = spectralFlux(soundToAnalyse,fs);
+    rolloffPoint = spectralRolloffPoint(soundToAnalyse,fs);
+    flatness = spectralFlatness(soundToAnalyse,fs);
     dataInMatrix = [f0, hr,centroid,flux,rolloffPoint,flatness];
 %     dataInCell = {dataInMatrix};
-%ijderibjirgjirj
 end
