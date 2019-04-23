@@ -9,67 +9,26 @@ addpath(genpath("./audio"))
 [skrig3,Fs] = audioread('Skrig_Rasmus.wav');
 [skrig4,Fs] = audioread('10_screams_Female.wav');
 
+% Not currently used
 fs=8000;
 framesize = 30/1000*fs;
 
-recObj = audiorecorder(fs, 8, 1);
-
-%%%%%%%%%%%mnjkn
-
-% disp('Start speaking.');
-% recordblocking(recObj, 1);
-% disp('End of Recording.');
-
-% data = getaudiodata(Help1, 'double');
+% Do AP on help signals
 h1 = audioProcessing(Help1, Fs);
 h2 = audioProcessing(Help2, Fs);
 h3 = audioProcessing(Help3, Fs);
-%h4 = audioProcessing(Help4, Fs);
+h4 = audioProcessing(Help4, Fs);
 
-AllH = {h1, h2, h3};
+AllH = {h1, h2, h3, h4};
 
+% Do AP on scream signals
 s1 = audioProcessing(skrig1, Fs);
 s2 = audioProcessing(skrig2, Fs);
 s3 = audioProcessing(skrig3, Fs);
-%s4 = audioProcessing(skrig4, Fs);
+s4 = audioProcessing(skrig4, Fs);
 
-AllS = {s1, s2, s3};
+AllS = {s1, s2, s3, s4};
 
-% s1 = audioProcessing(skrig1, Fs);
-% s2 = audioProcessing(skrig2, Fs);
-% s3 = audioProcessing(skrig3, Fs);
-
-% C2 = [hr,centroid,flux,rolloffPoint,flatness];
-% 
-% C = {f0,hr,centroid,flux,rolloffPoint,flatness,data_fft};
-
-% if data < data.length
-%    for (a[i] = 0; i*1323 < data; i++) {
-%        testData = data(1323*i:1323*i+1323);
-%        }
-%
-% end
-
-
-
-% testArr = zeros(framesize,1);
-% for i = 0:fs/framesize
-%    if i < 33
-%     test = data(i*framesize+1:i*framesize+framesize);
-%     testArr = [testArr test];
-%    end
-% end
-
-% subplot(2,1,2)
-% %plot(data_fft)
-% plot(abs(data_fft(:,1)));
-% % audioInMono = mean(data,2);
-% 
-% t = (0:length(audioInMono)-1)/fs;
-% subplot(2,1,1)
-% %0p0lot(t,audioInMono)
-% ylabel('Amplitude')
-% fclose(fid);
 disp("done")
 %% test zone
 steatzone3 = audioProcessing(skrig3, Fs);
@@ -83,28 +42,10 @@ fsurf(gmPDF,[-10, 10])
 
 
 %% Train Gmm-Hmm model
-% Generate Data
-GMMTestValues = importdata('bimodal_example.csv');
+% Locates files
 addpath(genpath("./matlab-hmm-master"))
-% for i1 = 1:2
-%     X1 = mvnrnd([0,0], [0.5, 0.2; 0.2, 0.3]/5, 20);
-%     X2 = mvnrnd([0,2], [0.3, -0.2; -0.2, 0.5]/5, 30);
-%     X3 = mvnrnd([0,4], [0.5, 0; 0, 0.3]/5, 40);
-%     X = [X1; X2; X3];
-%     Data{i1} = X;
-% end
-% for i1 = 3:4
-%     X1 = mvnrnd([2,0], [0.5, 0.2; 0.2, 0.3]/5, 20);
-%     X2 = mvnrnd([2,2], [0.3, -0.2; -0.2, 0.5]/5, 30);
-%     X3 = mvnrnd([2,4], [0.5, 0; 0, 0.3]/5, 30);
-%     X = [X1; X2; X3];
-%     Data{i1} = X;
-% end
-% Xall = cell2mat(Data');
-% 
-test = {GMMTestValues(1:50), GMMTestValues(51:100)};
-% delAfTest = {10, 11};
 
+% GMM and HMM implementation calls
 Q = 6;      % state num
 M = 3;      % mix num
 [p_start, A, phi, loglik] = ChmmGmm(AllH, Q, M);
@@ -165,9 +106,9 @@ function CalOfLoglik2(evalData, model_1_phi, model_2_phi, model_1_p_start, model
     end
 end
 
+% Function for running all AP methods on a signal and returning them in a
+% matrix.
 function dataInMatrix = audioProcessing(soundToAnalyse, fs)
-    %data_fft = fft(soundToAnalyse);
-    %data_fft = abs(data_fft(:,1));
     % Converts Stereo signals into mono signals.
     if size(soundToAnalyse,2)>1
         soundToAnalyse= sum(soundToAnalyse, 2) / size(soundToAnalyse, 2);
