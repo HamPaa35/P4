@@ -30,17 +30,6 @@ s4 = audioProcessing(skrig4, Fs);
 AllS = {s1, s2, s3, s4};
 
 disp("done")
-%% test zone
-steatzone3 = audioProcessing(skrig3, Fs);
-%% Supervised learning
-GMMTestValues = importdata('bimodal_example.csv')
-histfit(GMMTestValues)
-GMModel = fitgmdist(GMMTestValues, 20)
-gmPDF = @(x)reshape(pdf(GMModel,x(:)),size(x));
-
-fsurf(gmPDF,[-10, 10])
-
-
 %% Train Gmm-Hmm model
 % Locates files
 addpath(genpath("./matlab-hmm-master"))
