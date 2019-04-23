@@ -10,8 +10,24 @@ addpath(genpath("./audio"))
 [skrig4,Fs] = audioread('10_screams_Female.wav');
 
 % Not currently used
-fs=8000;
+fs=44100;
 framesize = 30/1000*fs;
+
+% Assumed implementation of loop : help
+% move into function later
+h = [];
+% loop through folder with different people
+for i = 0:foldersize1
+    foldersize2 = size(folder, i);
+    % loop through folder of different sound files and add parameters to
+    % list.
+    for j = 0:foldersize2
+        [Help,Fs] = audioread('file[j]');
+        h[i] = append(h[i], audioProcessing(Help, Fs));
+    end
+    % create different combinations of parameters
+    
+end
 
 % Do AP on help signals
 h1 = audioProcessing(Help1, Fs);
