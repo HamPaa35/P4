@@ -1,8 +1,11 @@
 %% AudioProcessing
+clc
+clear
+
 addpath(genpath("./audio"))
-[Help1,Fs] = audioread('10_hjælp_Mathias.wav');
+[Help1,Fs] = audioread('10_hjÃ¦lp_Mathias.wav');
 [Help2,Fs] = audioread('help-Glerup.wav');
-[Help3,Fs] = audioread('Hjælp_Rasmus.wav');
+[Help3,Fs] = audioread('HjÃ¦lp_Rasmus.wav');
 [Help4,Fs] = audioread('10_helps_Female.wav');
 [skrig1,Fs] = audioread('10_skrig_Mathias.wav');
 [skrig2,Fs] = audioread('screech-Glerup.wav');
@@ -15,19 +18,23 @@ framesize = 30/1000*fs;
 
 % Assumed implementation of loop : help
 % move into function later
-% h = [];
-% loop through folder with different people
-% for i = 0:foldersize1
-%     foldersize2 = size(folder, i);
-%     % loop through folder of different sound files and add parameters to
-%     % list.
-%     for j = 0:foldersize2
-%         [Help,Fs] = audioread('file[j]');
-%         h[i] = append(h[i], audioProcessing(Help, Fs));
-%     end
-%     % create different combinations of parameters
-% 
-% end
+h = [];
+% retrieve names of individual files in folders
+% Define a starting folder.
+start_path = fullfile(matlabroot, '\toolbox');
+if ~exist(start_path, 'dir')
+	start_path = matlabroot;
+end
+% Ask user to confirm the folder, or change it.
+uiwait(msgbox('Pick a starting folder on the next window that will come up.'));
+topLevelFolder = uigetdir(start_path);
+if topLevelFolder == 0
+	return;
+end
+fprintf('The top level folder is "%s".\n', topLevelFolder);
+names = fileRetrieve(topLevelFolder);
+
+[Help1,Fs] = audioread(names(1));
 
 % Do AP on help signals
 h1 = audioProcessing(Help1, Fs);
@@ -58,7 +65,7 @@ M = 3;      % mix num
 [p_start, A, phi, loglik] = ChmmGmm(AllH, Q, M);
 disp("hdone")
 [tp_start, tA, tphi, tloglik] = ChmmGmm(AllS, Q, M);
-disp("Trained") 
+disp("Trained")
 % HelpModel = Model(p_start, A, phi);
 % ScreamModel = Model(tp_start, tA, tphi);
 model_1h = {p_start, A, phi};
@@ -145,7 +152,7 @@ end
 function modelMatrix = trainModels(audioData)
     addpath(genpath("./matlab-hmm-master"))
     dataSize = size(audioData);
-    GmmModels = cell(dataSize(1), 1); 
+    GmmModels = cell(dataSize(1), 1);
     for i =1:dataSize(1)
         % GMM and HMM implementation calls
         Q = 6;      % state num
@@ -163,7 +170,7 @@ function loglikMatrix = evalModels(evalData, modelMatrix)
     obj_num = length(evalData);
     addpath(genpath("./matlab-hmm-master"))
     dataSize = size(modelMatrix);
-    loglikOnModels = cell(dataSize(1), 1); 
+    loglikOnModels = cell(dataSize(1), 1);
     for i =1:dataSize(1)
         for r = 1:obj_num
             logp_xn_given_zn = Gmm_logp_xn_given_zn(evalData{r}, modelMatrix{i}.phi);
@@ -175,5 +182,5 @@ function loglikMatrix = evalModels(evalData, modelMatrix)
     end
     disp("All models done")
     loglikMatrix = loglikOnModels;
-    
+
 end
