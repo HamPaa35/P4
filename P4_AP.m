@@ -31,7 +31,11 @@ AllS = {s1, s2, s3, s4};
 
 disp("done")
 %% test zone
-steatzone3 = audioProcessing(skrig3, Fs);
+addpath(genpath("./audio"))
+test = '10'
+test2 = strcat(test, '_hjælp_Mathias.wav')
+[Helptest, Fs] = audioread(test2);
+sound(Helptest, 44200)
 %% Supervised learning
 GMMTestValues = importdata('bimodal_example.csv')
 histfit(GMMTestValues)
@@ -39,8 +43,6 @@ GMModel = fitgmdist(GMMTestValues, 20)
 gmPDF = @(x)reshape(pdf(GMModel,x(:)),size(x));
 
 fsurf(gmPDF,[-10, 10])
-
-
 %% Train Gmm-Hmm model
 % Locates files
 addpath(genpath("./matlab-hmm-master"))
@@ -58,19 +60,19 @@ model_2h = {tp_start, tA, tphi};
 [HelpTest,Fs] = audioread('Skrig_Rasmus.wav');
 [skrigTest,Fs] = audioread('test_skrig.mp3');
 recObj = audiorecorder(Fs, 8, 2);
-% 
+
 disp('Start speaking.');
 recordblocking(recObj, 2);
 disp('End of Recording.');
 % 
 liveData = getaudiodata(recObj, 'double');
-Live = {audioProcessing(liveData, Fs);};
+Live = {audioProcessing(liveData, Fs)}; 
 
 ht = {audioProcessing(HelpTest, Fs)};
 
 st = {audioProcessing(skrigTest, Fs)};
  
-CalOfLoglik(Live, model_1h, model_2h)
+CalOfLoglik(ht, model_1h, model_2h)
 
 function CalOfLoglik(evalData, model_l, model_2)
     obj_num = length(evalData);
@@ -125,5 +127,4 @@ function dataInMatrix = audioProcessing(soundToAnalyse, fs)
     rolloffPoint = spectralRolloffPoint(soundToAnalyse,fs);
     flatness = spectralFlatness(soundToAnalyse,fs);
     dataInMatrix = [f0, hr,centroid,flux,rolloffPoint,flatness];
-%     dataInCell = {dataInMatrix};
 end
