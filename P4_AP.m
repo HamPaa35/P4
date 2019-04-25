@@ -1,8 +1,8 @@
 %% AudioProcessing
 addpath(genpath("./audio"))
-[Help1,Fs] = audioread('10_hjælp_Mathias.wav');
+[Help1,Fs] = audioread('10_hjï¿½lp_Mathias.wav');
 [Help2,Fs] = audioread('help-Glerup.wav');
-[Help3,Fs] = audioread('Hjælp_Rasmus.wav');
+[Help3,Fs] = audioread('Hjï¿½lp_Rasmus.wav');
 [Help4,Fs] = audioread('10_helps_Female.wav');
 [skrig1,Fs] = audioread('10_skrig_Mathias.wav');
 [skrig2,Fs] = audioread('screech-Glerup.wav');
@@ -10,8 +10,24 @@ addpath(genpath("./audio"))
 [skrig4,Fs] = audioread('10_screams_Female.wav');
 
 % Not currently used
-fs=8000;
+fs=44100;
 framesize = 30/1000*fs;
+
+% Assumed implementation of loop : help
+% move into function later
+h = [];
+% loop through folder with different people
+for i = 0:foldersize1
+    foldersize2 = size(folder, i);
+    % loop through folder of different sound files and add parameters to
+    % list.
+    for j = 0:foldersize2
+        [Help,Fs] = audioread('file[j]');
+        h[i] = append(h[i], audioProcessing(Help, Fs));
+    end
+    % create different combinations of parameters
+
+end
 
 % Do AP on help signals
 h1 = audioProcessing(Help1, Fs);
@@ -30,19 +46,6 @@ s4 = audioProcessing(skrig4, Fs);
 AllS = {s1, s2, s3, s4};
 
 disp("done")
-%% test zone
-addpath(genpath("./audio"))
-test = '10'
-test2 = strcat(test, '_hjælp_Mathias.wav')
-[Helptest, Fs] = audioread(test2);
-sound(Helptest, 44200)
-%% Supervised learning
-GMMTestValues = importdata('bimodal_example.csv')
-histfit(GMMTestValues)
-GMModel = fitgmdist(GMMTestValues, 20)
-gmPDF = @(x)reshape(pdf(GMModel,x(:)),size(x));
-
-fsurf(gmPDF,[-10, 10])
 %% Train Gmm-Hmm model
 % Locates files
 addpath(genpath("./matlab-hmm-master"))
@@ -64,14 +67,14 @@ recObj = audiorecorder(Fs, 8, 2);
 disp('Start speaking.');
 recordblocking(recObj, 2);
 disp('End of Recording.');
-% 
+%
 liveData = getaudiodata(recObj, 'double');
-Live = {audioProcessing(liveData, Fs)}; 
+Live = {audioProcessing(liveData, Fs)};
 
 ht = {audioProcessing(HelpTest, Fs)};
 
 st = {audioProcessing(skrigTest, Fs)};
- 
+
 CalOfLoglik(ht, model_1h, model_2h)
 
 function CalOfLoglik(evalData, model_l, model_2)
@@ -119,7 +122,7 @@ function dataInMatrix = audioProcessing(soundToAnalyse, fs)
     fTemp = pitch(soundToAnalyse, fs);
     hrSize = size(hr);
     fTempSize = size(fTemp);
-    sizeDifference = hrSize(1) - fTempSize(1); 
+    sizeDifference = hrSize(1) - fTempSize(1);
     fzeros = zeros(sizeDifference, hrSize(2));
     f0 = [fTemp;fzeros];
     centroid = spectralCentroid(soundToAnalyse, fs);
