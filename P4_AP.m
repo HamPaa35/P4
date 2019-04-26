@@ -2,21 +2,6 @@
 clc
 clear
 
-addpath(genpath("./audio"))
-[Help1,Fs] = audioread('10_hjælp_Mathias.wav');
-[Help2,Fs] = audioread('help-Glerup.wav');
-[Help3,Fs] = audioread('Hjælp_Rasmus.wav');
-[Help4,Fs] = audioread('10_helps_Female.wav');
-[skrig1,Fs] = audioread('10_skrig_Mathias.wav');
-[skrig2,Fs] = audioread('screech-Glerup.wav');
-[skrig3,Fs] = audioread('Skrig_Rasmus.wav');
-[skrig4,Fs] = audioread('10_screams_Female.wav');
-
-% Not currently used
-fs=44100;
-framesize = 30/1000*fs;
-
-
 % retrieve names of individual files in folders
 % Define a starting folder.
 h = {1,3};
