@@ -4,7 +4,7 @@ clear
 
 % retrieve names of individual files in folders
 % Define a starting folder.
-h = {1,3};
+h = {};
 for k = 1:3
     start_path = fullfile(matlabroot, '\toolbox');
     if ~exist(start_path, 'dir')
@@ -31,10 +31,9 @@ for k = 1:3
     names = fileRetrieve(topLevelFolder);
 
     % Do AP on the audio files
-    h{1,k} = {1,length(names)};
     for i = 1:length(names)
         [Help,Fs] = audioread(names(i));
-        h{1,k}{1,i} = audioProcessing(Help, Fs);
+        h{k}{i} = audioProcessing(Help, Fs);
     end
 end
 
