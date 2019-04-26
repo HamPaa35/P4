@@ -1,6 +1,4 @@
 %% AudioProcessing
-clc
-clear
 
 % retrieve names of individual files in folders
 % Define a starting folder.
@@ -39,8 +37,6 @@ end
 
 disp("done")
 %% Old audio
-clc
-clear
 
 addpath(genpath("./audio"))
 [Help1,Fs] = audioread('10_hjælp_Mathias.wav');
@@ -111,7 +107,7 @@ disp("Trained")
 model_1h = {p_start, A, phi};
 model_2h = {tp_start, tA, tphi};
 %% test zone
-GmmModels = trainModels(AllaudioData);
+GmmModels = trainModels(h);
 %% Eval model vs. data
 [HelpTest,Fs] = audioread('Skrig_Rasmus.wav');
 [skrigTest,Fs] = audioread('test_skrig.mp3');
@@ -128,9 +124,9 @@ ht = {audioProcessing(HelpTest, Fs)};
 
 st = {audioProcessing(skrigTest, Fs)};
 
-[loglikFromAllModels, bestModel] = evalModels(ht, GmmModels);
+[loglikFromAllModels, bestModel] = evalModels(Live, GmmModels);
 
-CalOfLoglik(ht, GmmModels{1}, GmmModels{2})
+CalOfLoglik(Live, GmmModels{1}, GmmModels{2})
 
 function CalOfLoglik(evalData, model_l, model_2)
     obj_num = length(evalData);
@@ -193,11 +189,11 @@ function modelMatrix = trainModels(audioData)
     addpath(genpath("./matlab-hmm-master"))
     dataSize = size(audioData);
     GmmModels = cell(dataSize(1), 1);
-    for i =1:dataSize(1)
+    for i =1:dataSize(2)
         % GMM and HMM implementation calls
         Q = 6;      % state num %Antal stavelser
         M = 3;      % mix num %Gausians per stavelser %Ikke mega vigtigt, men prøv lidt
-        [p_start, A, phi, ~] = ChmmGmm(audioData(i), Q, M);
+        [p_start, A, phi, ~] = ChmmGmm(audioData{i}, Q, M);
         GmmModels(i, 1) = {Model(p_start, A, phi)};
         disp("current model done")
         disp(num2str(i))
