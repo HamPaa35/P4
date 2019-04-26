@@ -3,9 +3,9 @@ clc
 clear
 
 addpath(genpath("./audio"))
-[Help1,Fs] = audioread('10_hjÃ¦lp_Mathias.wav');
+[Help1,Fs] = audioread('10_hjælp_Mathias.wav');
 [Help2,Fs] = audioread('help-Glerup.wav');
-[Help3,Fs] = audioread('HjÃ¦lp_Rasmus.wav');
+[Help3,Fs] = audioread('Hjælp_Rasmus.wav');
 [Help4,Fs] = audioread('10_helps_Female.wav');
 [skrig1,Fs] = audioread('10_skrig_Mathias.wav');
 [skrig2,Fs] = audioread('screech-Glerup.wav');
@@ -80,7 +80,7 @@ recObj = audiorecorder(Fs, 8, 2);
 disp('Start speaking.');
 recordblocking(recObj, 2);
 disp('End of Recording.');
-
+ 
 liveData = getaudiodata(recObj, 'double');
 Live = {audioProcessing(liveData, Fs)};
 
@@ -88,7 +88,7 @@ ht = {audioProcessing(HelpTest, Fs)};
 
 st = {audioProcessing(skrigTest, Fs)};
 
-testting = evalModels(Live, GmmModels);
+[loglikFromAllModels, bestModel] = evalModels(Live, GmmModels);
 
 CalOfLoglik(Live, GmmModels{1}, GmmModels{2})
 
@@ -155,8 +155,8 @@ function modelMatrix = trainModels(audioData)
     GmmModels = cell(dataSize(1), 1);
     for i =1:dataSize(1)
         % GMM and HMM implementation calls
-        Q = 6;      % state num
-        M = 3;      % mix num
+        Q = 6;      % state num %Antal stavelser
+        M = 3;      % mix num %Gausians per stavelser %Ikke mega vigtigt, men prøv lidt
         [p_start, A, phi, ~] = ChmmGmm(audioData(i), Q, M);
         GmmModels(i, 1) = {Model(p_start, A, phi)};
         disp("current model done")
@@ -166,21 +166,25 @@ function modelMatrix = trainModels(audioData)
     modelMatrix = GmmModels;
 end
 
-function loglikMatrix = evalModels(evalData, modelMatrix)
+function [loglikMatrix, bestModelMatch] = evalModels(evalData, modelMatrix)
     obj_num = length(evalData);
     addpath(genpath("./matlab-hmm-master"))
     dataSize = size(modelMatrix);
-    loglikOnModels = cell(dataSize(1), 1);
+    loglikOnModels = cell(dataSize(1), 2);
     for i =1:dataSize(1)
         for r = 1:obj_num
             logp_xn_given_zn = Gmm_logp_xn_given_zn(evalData{r}, modelMatrix{i}.phi);
             [~, ~, Loglik] = LogForwardBackward(logp_xn_given_zn, modelMatrix{i}.p_start, modelMatrix{i}.A);
         end
         loglikOnModels(i, 1) = {Loglik};
+        loglikOnModels(i, 2) = {i};
         disp("eval current model done")
         disp(num2str(i))
     end
     disp("All models done")
-    loglikMatrix = loglikOnModels;
+    sortedLoglik = sortrows(loglikOnModels, [1]);
+    sizeForOut = size(sortedLoglik);
+    bestModelMatch = sortedLoglik{sizeForOut(1), sizeForOut(2)};
+    loglikMatrix = sortedLoglik;
 
 end
