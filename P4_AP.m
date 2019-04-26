@@ -16,27 +16,42 @@ addpath(genpath("./audio"))
 fs=44100;
 framesize = 30/1000*fs;
 
-% Assumed implementation of loop : help
-% move into function later
-h = [];
+
 % retrieve names of individual files in folders
 % Define a starting folder.
-start_path = fullfile(matlabroot, '\toolbox');
-if ~exist(start_path, 'dir')
-	start_path = matlabroot;
-end
-% Ask user to confirm the folder, or change it.
-uiwait(msgbox('Pick a starting folder on the next window that will come up.'));
-topLevelFolder = uigetdir(start_path);
-if topLevelFolder == 0
-	return;
-end
-fprintf('The top level folder is "%s".\n', topLevelFolder);
-names = fileRetrieve(topLevelFolder);
+h = {3,1};
+for k = 1:3
+    start_path = fullfile(matlabroot, '\toolbox');
+    if ~exist(start_path, 'dir')
+        start_path = matlabroot;
+    end
+    % Ask user to confirm the folder, or change it.
+    switch k
+        case 1
+            uiwait(msgbox('Pick the folder for screams in the following window.'));
+        case 2
+            uiwait(msgbox('Pick the help folder in the following window.'));
+        case 3
+            uiwait(msgbox('Pick the folder with falls in the following window.'));
+        otherwise
+            disp('Error')
+    end
+    topLevelFolder = uigetdir(start_path);
+    if topLevelFolder == 0
+        return;
+    end
+    fprintf('The top level folder is "%s".\n', topLevelFolder);
+    % Retrieves the names of the audio files within the folder and its
+    % subfolders
+    names = fileRetrieve(topLevelFolder);
 
-[Help1,Fs] = audioread(names(1));
-
-% Do AP on help signals
+    % Do AP on the audio files
+    h{k,1} = {length(names),1};
+    for i = 1:length(names)
+        [Help,Fs] = audioread(names(i));
+        h{k,1}{i,1} = audioProcessing(Help, Fs);
+    end
+end
 h1 = audioProcessing(Help1, Fs);
 h2 = audioProcessing(Help2, Fs);
 h3 = audioProcessing(Help3, Fs);
