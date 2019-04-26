@@ -6,11 +6,11 @@ clear
 % Define a starting folder.
 h = {};
 for k = 1:3
-    start_path = fullfile(matlabroot, '\toolbox');
+    start_path = fullfile("./audio");
     if ~exist(start_path, 'dir')
         start_path = matlabroot;
     end
-    % Ask user to confirm the folder, or change it.
+    % Ask user to choose the folder.
     switch k
         case 1
             uiwait(msgbox('Pick the folder for screams in the following window.'));
@@ -28,11 +28,11 @@ for k = 1:3
     fprintf('The top level folder is "%s".\n', topLevelFolder);
     % Retrieves the names of the audio files within the folder and its
     % subfolders
-    names = fileRetrieve(topLevelFolder);
+    filePaths = fileRetrieve(topLevelFolder);
 
-    % Do AP on the audio files
-    for i = 1:length(names)
-        [Help,Fs] = audioread(names(i));
+    % Do AP on retrieved audio files
+    for i = 1:length(filePaths)
+        [Help,Fs] = audioread(filePaths(i));
         h{k}{i} = audioProcessing(Help, Fs);
     end
 end
