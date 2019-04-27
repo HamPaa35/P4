@@ -36,77 +36,7 @@ for k = 1:3
 end
 
 disp("done")
-%% Old audio
-
-addpath(genpath("./audio"))
-[Help1,Fs] = audioread('10_hjælp_Mathias.wav');
-[Help2,Fs] = audioread('help-Glerup.wav');
-[Help3,Fs] = audioread('Hjælp_Rasmus.wav');
-[Help4,Fs] = audioread('10_helps_Female.wav');
-[skrig1,Fs] = audioread('10_skrig_Mathias.wav');
-[skrig2,Fs] = audioread('screech-Glerup.wav');
-[skrig3,Fs] = audioread('Skrig_Rasmus.wav');
-[skrig4,Fs] = audioread('10_screams_Female.wav');
-
-% Not currently used
-fs=44100;
-framesize = 30/1000*fs;
-
-% % Assumed implementation of loop : help
-% % move into function later
-% h = [];
-% % retrieve names of individual files in folders
-% % Define a starting folder.
-% start_path = fullfile(matlabroot, '\toolbox');
-% if ~exist(start_path, 'dir')
-% 	start_path = matlabroot;
-% end
-% % Ask user to confirm the folder, or change it.
-% uiwait(msgbox('Pick a starting folder on the next window that will come up.'));
-% topLevelFolder = uigetdir(start_path);
-% if topLevelFolder == 0
-% 	return;
-% end
-% fprintf('The top level folder is "%s".\n', topLevelFolder);
-% names = fileRetrieve(topLevelFolder);
-% 
-% [Help1,Fs] = audioread(names(1));
-
-% Do AP on help signals
-h1 = audioProcessing(Help1, Fs);
-h2 = audioProcessing(Help2, Fs);
-h3 = audioProcessing(Help3, Fs);
-h4 = audioProcessing(Help4, Fs);
-
-AllH = {h1, h2, h3, h4};
-
-% Do AP on scream signals
-s1 = audioProcessing(skrig1, Fs);
-s2 = audioProcessing(skrig2, Fs);
-s3 = audioProcessing(skrig3, Fs);
-s4 = audioProcessing(skrig4, Fs);
-
-AllS = {s1, s2, s3, s4};
-
-AllaudioData = [AllH; AllS];
-
-disp("done")
 %% Train Gmm-Hmm model
-% Locates files
-addpath(genpath("./matlab-hmm-master"))
-
-% GMM and HMM implementation calls
-Q = 6;      % state num
-M = 3;      % mix num
-[p_start, A, phi, loglik] = ChmmGmm(AllH, Q, M);
-disp("hdone")
-[tp_start, tA, tphi, tloglik] = ChmmGmm(AllS, Q, M);
-disp("Trained")
-% HelpModel = Model(p_start, A, phi);
-% ScreamModel = Model(tp_start, tA, tphi);
-model_1h = {p_start, A, phi};
-model_2h = {tp_start, tA, tphi};
-%% test zone
 GmmModels = trainModels(h);
 %% Eval model vs. data
 [HelpTest,Fs] = audioread('Skrig_Rasmus.wav');
