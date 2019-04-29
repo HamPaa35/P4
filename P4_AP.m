@@ -1,6 +1,4 @@
 %% AudioProcessing
-clc
-clear
 
 % retrieve names of individual files in folders
 % Define a starting folder.
@@ -69,6 +67,7 @@ st = {audioProcessing(skrigTest, Fs)};
 
 CalOfLoglik(ht, model_1h, model_2h)
 
+%% Functions
 function CalOfLoglik(evalData, model_l, model_2)
     obj_num = length(evalData);
     for r = 1:obj_num
