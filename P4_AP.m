@@ -2,10 +2,10 @@
 
 % retrieve names of individual files in folders
 % Define a starting folder.
-h = {};
 combNumb = 6;
 colStart = combNumb +1;
-soundTypes = 1;
+soundTypes = 3;
+h = cell(combNumb, soundTypes);
 for k = 1:soundTypes
     start_path = fullfile("./audio");
     if ~exist(start_path, 'dir')
@@ -34,15 +34,15 @@ for k = 1:soundTypes
     % Do AP on retrieved audio files
     for i = 1:length(filePaths)
         [Help,Fs] = audioread(filePaths(i));
-        h{k}{i} = audioProcessingNorm(Help, Fs);
+        h{1,k}{i} = audioProcessingNorm(Help, Fs);
     end
     % Split AP results into different combinations
-    for j = 1:combNumb
-        h{j, k} = h{k};
-        for i = 1:length(h{k})
+    for j = 2:combNumb
+        h{j, k} = h{1,k};
+        for i = 1:length(h{1,k})
             if j > 1
                 for g = 1:j-1
-                    h{j, k}{1, i}(:, colStart-g) = [];
+                    h{j, k}{i}(:, colStart-g) = [];
                 end
             end
         end
