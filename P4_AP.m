@@ -3,7 +3,8 @@
 % retrieve names of individual files in folders
 % Define a starting folder.
 h = {};
-for k = 1:3
+combinationNumber = 6;
+for k = 1:1
     start_path = fullfile("./audio");
     if ~exist(start_path, 'dir')
         start_path = matlabroot;
@@ -32,6 +33,17 @@ for k = 1:3
     for i = 1:length(filePaths)
         [Help,Fs] = audioread(filePaths(i));
         h{k}{i} = audioProcessing(Help, Fs);
+    end
+    % Split AP results into different combinations
+    for j = 1:combinationNumber
+        h{j, k} = h{k};
+        for i = 1:length(h{k})
+            if j > 1
+                for g = 1:j-1
+                    h{j, k}{1, i}(:, (combinationNumber+1)-g) = [];
+                end
+            end
+        end
     end
 end
 
