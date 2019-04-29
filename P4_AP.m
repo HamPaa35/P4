@@ -38,25 +38,29 @@ end
 disp("done")
 %% Train Gmm-Hmm model
 GmmModels = trainModels(h);
+%% just the loglik
+[loglikFromAllModels2, bestModel2] = evalModels(ht, GmmModels);
+[loglikFromAllModels1, bestModel1] = evalModels(st, GmmModels);
 %% Eval model vs. data
-[HelpTest,Fs] = audioread('Skrig_Rasmus.wav');
-[skrigTest,Fs] = audioread('test_skrig.mp3');
-recObj = audiorecorder(Fs, 8, 2);
+addpath(genpath("./audio"))
+[HelpTest,Fs] = audioread('Hjælp_GMM_refinement.wav');
+[skrigTest,Fs] = audioread('Skrig_GMM_refinement.wav');
+recObj = audiorecorder(8000, 16, 1);
 
 disp('Start speaking.');
 recordblocking(recObj, 2);
 disp('End of Recording.');
  
 liveData = getaudiodata(recObj, 'double');
-Live = {audioProcessing(liveData, Fs)};
+Live = {audioProcessing(liveData, 8000)};
 
-ht = {audioProcessing(HelpTest, Fs)};
+ht = {audioProcessing(HelpTest, 8000)};
 
-st = {audioProcessing(skrigTest, Fs)};
+st = {audioProcessing(skrigTest, 8000)};
 
 [loglikFromAllModels, bestModel] = evalModels(Live, GmmModels);
 
-CalOfLoglik(Live, GmmModels{1}, GmmModels{2})
+% CalOfLoglik(Live, GmmModels{1}, GmmModels{2})
 
 function CalOfLoglik(evalData, model_l, model_2)
     obj_num = length(evalData);
@@ -121,8 +125,8 @@ function modelMatrix = trainModels(audioData)
     GmmModels = cell(dataSize(1), 1);
     for i =1:dataSize(2)
         % GMM and HMM implementation calls
-        Q = 6;      % state num %Antal stavelser
-        M = 3;      % mix num %Gausians per stavelser %Ikke mega vigtigt, men prøv lidt
+        Q = 50;      % state num %Antal stavelser
+        M = 1;      % mix num %Gausians per stavelser %Ikke mega vigtigt, men prøv lidt
         [p_start, A, phi, ~] = ChmmGmm(audioData{i}, Q, M);
         GmmModels(i, 1) = {Model(p_start, A, phi)};
         disp("current model done")
