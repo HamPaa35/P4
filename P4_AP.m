@@ -3,8 +3,10 @@
 % retrieve names of individual files in folders
 % Define a starting folder.
 h = {};
-combinationNumber = 6;
-for k = 1:1
+combNumb = 6;
+colStart = combNumb +1;
+soundTypes = 1;
+for k = 1:soundTypes
     start_path = fullfile("./audio");
     if ~exist(start_path, 'dir')
         start_path = matlabroot;
@@ -32,15 +34,15 @@ for k = 1:1
     % Do AP on retrieved audio files
     for i = 1:length(filePaths)
         [Help,Fs] = audioread(filePaths(i));
-        h{k}{i} = audioProcessing(Help, Fs);
+        h{k}{i} = audioProcessingNorm(Help, Fs);
     end
     % Split AP results into different combinations
-    for j = 1:combinationNumber
+    for j = 1:combNumb
         h{j, k} = h{k};
         for i = 1:length(h{k})
             if j > 1
                 for g = 1:j-1
-                    h{j, k}{1, i}(:, (combinationNumber+1)-g) = [];
+                    h{j, k}{1, i}(:, colStart-g) = [];
                 end
             end
         end
@@ -110,29 +112,70 @@ end
 % Function for running all AP methods on a signal and returning them in a
 % matrix.
 function dataInMatrix = audioProcessing(soundToAnalyse, fs)
+    a = 0; % minimum value after mapping
+    b = 1; % maximum value after mapping
     % Converts Stereo signals into mono signals.
     if size(soundToAnalyse,2)>1
         soundToAnalyse= sum(soundToAnalyse, 2) / size(soundToAnalyse, 2);
     end
+    % Harmonic to noise ratio
     hr = harmonicRatio(soundToAnalyse, fs);
+    % Pitch
     fTemp = pitch(soundToAnalyse, fs);
     hrSize = size(hr);
     fTempSize = size(fTemp);
     sizeDifference = hrSize(1) - fTempSize(1);
     fzeros = zeros(sizeDifference, hrSize(2));
     f0 = [fTemp;fzeros];
+    % Spectral centroid
     centroid = spectralCentroid(soundToAnalyse, fs);
+    %Flux
     flux = spectralFlux(soundToAnalyse,fs);
+    % Roll off Point
     rolloffPoint = spectralRolloffPoint(soundToAnalyse,fs);
+    % Spectral flatness
     flatness = spectralFlatness(soundToAnalyse,fs);
+    % Output
     dataInMatrix = [f0, hr,centroid,flux,rolloffPoint,flatness];
 end
+% AP with normalization
+function dataInMatrix = audioProcessingNorm(soundToAnalyse, fs)
+    % Converts Stereo signals into mono signals.
+    if size(soundToAnalyse,2)>1
+        soundToAnalyse= sum(soundToAnalyse, 2) / size(soundToAnalyse, 2);
+    end
+    % Harmonic to noise ratio
+    hr = harmonicRatio(soundToAnalyse, fs);
+    % Pitch
+    fTemp = pitch(soundToAnalyse, fs);
+    hrSize = size(hr);
+    fTempSize = size(fTemp);
+    sizeDifference = hrSize(1) - fTempSize(1);
+    fzeros = zeros(sizeDifference, hrSize(2));
+    f0 = [fTemp;fzeros];
+    f0 = f0/(fs/2);
+    % Spectral centroid
+    centroid = spectralCentroid(soundToAnalyse, fs);
+    centroid = centroid/(fs/2);
+    %Flux
+    flux = spectralFlux(soundToAnalyse, fs);
+    flux = flux*10;
+    % Roll off Point
+    rolloffPoint = spectralRolloffPoint(soundToAnalyse,fs);
+    rolloffPoint = rolloffPoint/(fs/2);
+    % Spectral flatness
+    flatness = spectralFlatness(soundToAnalyse,fs);
+    % Output
+    dataInMatrix = [f0, hr,centroid,flux,rolloffPoint,flatness];
+end
+
+
 %Should take the array of sound data as input
 function modelMatrix = trainModels(audioData)
     addpath(genpath("./matlab-hmm-master"))
     dataSize = size(audioData);
     GmmModels = cell(dataSize(1), 1);
-    for i =1:dataSize(2)
+    for i = 1:dataSize(2)
         % GMM and HMM implementation calls
         Q = 6;      % state num %Antal stavelser
         M = 3;      % mix num %Gausians per stavelser %Ikke mega vigtigt, men prøv lidt
