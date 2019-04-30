@@ -1,5 +1,5 @@
-%% Audioprocessing
-h = audioProcessing();
+%% Retrieval of training data
+h = dataRetrieval();
 %% Train Gmm-Hmm model
 GmmModels = trainModels(h);
 %% Eval model vs. data
