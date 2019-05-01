@@ -5,7 +5,7 @@
 h = {};
 combNumb = 6;
 colStart = combNumb +1;
-soundTypes = 1;
+soundTypes = 3;
 for k = 1:soundTypes
     start_path = fullfile("./audio");
     if ~exist(start_path, 'dir')
@@ -34,24 +34,24 @@ for k = 1:soundTypes
     % Do AP on retrieved audio files
     for i = 1:length(filePaths)
         [Help,Fs] = audioread(filePaths(i));
-        h{k}{i} = audioProcessingNorm(Help, Fs);
+        h{k}{i} = audioProcessing(Help, Fs);
     end
     % Split AP results into different combinations
-    for j = 1:combNumb
-        h{j, k} = h{k};
-        for i = 1:length(h{k})
-            if j > 1
-                for g = 1:j-1
-                    h{j, k}{1, i}(:, colStart-g) = [];
-                end
-            end
-        end
-    end
+%     for j = 1:combNumb
+%         h{j, k} = h{1, k};
+%         for i = 1:length(h{k})
+%             if j > 1
+%                 for g = 1:j-1
+%                     h{j, k}{1, i}(:, colStart-g) = [];
+%                 end
+%             end
+%         end
+%     end
 end
 
 disp("done")
-%% Train Gmm-Hmm model
-GmmModels = trainModels(h);
+%% Train Gmm-Hmm model  
+GmmModels = trainModels(h);   
 %% just the loglik
 [loglikFromAllModels2, bestModel2] = evalModels(ht, GmmModels);
 [loglikFromAllModels1, bestModel1] = evalModels(st, GmmModels);
@@ -66,11 +66,11 @@ recordblocking(recObj, 2);
 disp('End of Recording.');
  
 liveData = getaudiodata(recObj, 'double');
-Live = {audioProcessing(liveData, 8000)};
+Live = {audioProcessingNorm(liveData, 8000)};
 
-ht = {audioProcessing(HelpTest, 8000)};
+ht = {audioProcessingNorm(HelpTest, 8000)};
 
-st = {audioProcessing(skrigTest, 8000)};
+st = {audioProcessingNorm(skrigTest, 8000)};
 
 [loglikFromAllModels, bestModel] = evalModels(Live, GmmModels);
 
@@ -181,8 +181,8 @@ function modelMatrix = trainModels(audioData)
     GmmModels = cell(dataSize(1), 1);
     for i = 1:dataSize(2)
         % GMM and HMM implementation calls
-        Q = 50;      % state num %Antal stavelser
-        M = 1;      % mix num %Gausians per stavelser %Ikke mega vigtigt, men prøv lidt
+        Q = 30;      % state num %Antal stavelser
+        M = 3;      % mix num %Gausians per stavelser %Ikke mega vigtigt, men prøv lidt
         [p_start, A, phi, ~] = ChmmGmm(audioData{i}, Q, M);
         GmmModels(i, 1) = {Model(p_start, A, phi)};
         disp("current model done")
