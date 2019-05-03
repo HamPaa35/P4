@@ -1,7 +1,6 @@
 function res = dataRetrieval()
     % Retrieve files and process them into a single variable allAudioRes.
     combNumb = 6;
-    colStart = combNumb +1;
     soundTypes = 3;
     allAudioRes = cell(combNumb*2-1, soundTypes);
     for k = 1:soundTypes
@@ -35,14 +34,25 @@ function res = dataRetrieval()
             allAudioRes{1,k}{i} = audioProcessing(Help, Fs);
         end
         % Split AP results into different combinations
-        for j = 2:combNumb
+        % loops rows
+        for j = 2:combNumb-1
+            row = j+4;
             allAudioRes{j, k} = allAudioRes{1,k};
-            row = j+5;
+            allAudioRes{row, k} = allAudioRes{1,k};
+            % loops columns
             for i = 1:length(allAudioRes{1,k})
-                allAudioRes{row, k}{i} = allAudioRes{1, k}{i}(:,j);
-                    for g = 1:j-1
-                        allAudioRes{j, k}{i}(:, colStart-g) = [];
-                    end
+                % Loops columns for matrix
+                for g = 0:j-2
+                    allAudioRes{j, k}{i}(:, combNumb-g) = [];
+                    allAudioRes{row, k}{i} = allAudioRes{row, k}{i}(:,2:end);
+                end
+            end
+        end
+        % adds the single values
+        for j = 1:combNumb
+            rowSingles = j+9;
+            for i = 1:length(allAudioRes{1,k})
+                allAudioRes{rowSingles, k}{i} = allAudioRes{1, k}{i}(:,j);
             end
         end
         
