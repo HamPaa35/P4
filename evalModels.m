@@ -10,10 +10,10 @@ function [loglikMatrix, bestModelMatch] = evalModels(evalData, modelMatrix)
         end
         loglikOnModels(i, 1) = {Loglik};
         loglikOnModels(i, 2) = {i};
-        disp("eval current model done")
-        disp(num2str(i))
+        %disp("eval current model done")
+        %disp(num2str(i))
     end
-    disp("All models done")
+    %disp("All models done")
     sortedLoglik = sortrows(loglikOnModels, [1]);
     sizeForOut = size(sortedLoglik);
     bestModelMatch = sortedLoglik{sizeForOut(1), sizeForOut(2)};
