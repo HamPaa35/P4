@@ -25,7 +25,7 @@ function dataInMatrix = audioProcessing(soundToAnalyse, fs)
     % Spectral flatness
     flatness = spectralFlatness(soundToAnalyse,fs);
     % Output
-    dataInMatrix = [f0, hr,centroid,flux,rolloffPoint,flatness];
+    dataInMatrix = [hr, f0, rolloffPoint, flux, centroid, flatness];
 end
 
 % ---- AP with normalization

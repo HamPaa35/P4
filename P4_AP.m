@@ -1,19 +1,16 @@
 %% Retrieval of training data
 % 1 = scream 2 = help 3 = fall
-e = dataRetrieval();
+h = dataRetrieval();
 %% Train Gmm-Hmm model
-% for i = 7:11
-%     Models{i} = trainModels(h,i);
-%     disp("done")
-%     disp(i)
-% end
-% AllGmm = trainModels(h,1);
-% Models8 = trainModels(h,8);
-% Models6 = trainModels(h,6);
-% Models7 = trainModels(h,7);
-% Models9 = trainModels(h,9);
-% Models10 = trainModels(h,10);
-% Models11 = trainModels(h,11);
+AllAudioData = trainModels(h,1);
+ModelTop5 = trainModels(h,2);
+ModelTop4 = trainModels(h,3);
+ModelTop3 = trainModels(h,4);
+ModelTop2 = trainModels(h,5);
+ModelButtom5 = trainModels(h,6);
+ModelButtom4 = trainModels(h,7);
+ModelButtom3 = trainModels(h,8);
+ModelButtom2 = trainModels(h,9);
 %% Eval test
 modelRow = 11;
 OverallSize = size(e);
