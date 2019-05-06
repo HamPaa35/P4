@@ -36,20 +36,24 @@ for j = 1:OverallSize(1)
 end
 res11 = res;
 %% Eval model vs. data
-addpath(genpath("./audio"))
-[HelpTest,Fs] = audioread('Hjælp_GMM_refinement.wav');
-[skrigTest,Fs] = audioread('Skrig_GMM_refinement.wav');
-recObj = audiorecorder(8000, 16, 1);
-
-disp('Start speaking.');
-recordblocking(recObj, 2);
-disp('End of Recording.');
-
-liveData = getaudiodata(recObj, 'double');
-Live = {audioProcessing(liveData, 8000)};
-
-ht = {audioProcessing(HelpTest, 8000)};
-
-st = {audioProcessing(skrigTest, 8000)};
-
-[loglikFromAllModels, bestModel] = evalModels(Live, GmmModels);
+ clear a;
+ addpath(genpath("./audio"))
+ recObj = audiorecorder(8000, 16, 1);
+ 
+ disp('Start speaking.');
+ recordblocking(recObj, 2);
+ disp('End of Recording.');
+ 
+ liveData = getaudiodata(recObj, 'double');
+ Live = {audioProcessing(liveData, 8000)}; 
+ [loglikFromAllModels, bestModel] = evalModels(Live, AllAudioData);
+a = arduino('COM4', 'Uno');
+if bestModel == 3
+writeDigitalPin(a, 'D12', 1);
+end
+if bestModel == 3
+    writeDigitalPin(a, 'D11', 1);
+end
+if bestModel == 3
+writeDigitalPin(a, 'D10', 1);
+end
