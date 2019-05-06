@@ -2,7 +2,8 @@ function res = dataRetrieval()
     % Retrieve files and process them into a single variable allAudioRes.
     combNumb = 6;
     soundTypes = 3;
-    allAudioRes = cell(combNumb*2-1, soundTypes);
+    allAudioRes = cell((combNumb-2)*2+1+combNumb, soundTypes);
+    titleString = "";
     for k = 1:soundTypes
         start_path = fullfile("./audio");
         if ~exist(start_path, 'dir')
@@ -12,14 +13,17 @@ function res = dataRetrieval()
         switch k
             case 1
                 uiwait(msgbox('Pick the folder for screams in the following window.'));
+                titleString = "Select screams";
             case 2
                 uiwait(msgbox('Pick the help folder in the following window.'));
+                titleString = "Select calls for help";
             case 3
                 uiwait(msgbox('Pick the folder with falls in the following window.'));
+                titleString = "Select falls";
             otherwise
                 disp('Error')
         end
-        topLevelFolder = uigetdir(start_path);
+        topLevelFolder = uigetdir(start_path, titleString);
         if topLevelFolder == 0
             return;
         end
@@ -36,7 +40,7 @@ function res = dataRetrieval()
         % Split AP results into different combinations
         % loops rows
         for j = 2:combNumb-1
-            row = j+4;
+            row = j+combNumb-2;
             allAudioRes{j, k} = allAudioRes{1,k};
             allAudioRes{row, k} = allAudioRes{1,k};
             % loops columns
@@ -50,7 +54,7 @@ function res = dataRetrieval()
         end
         % adds the single values
         for j = 1:combNumb
-            rowSingles = j+9;
+            rowSingles = j+((combNumb-2)*2+1);
             for i = 1:length(allAudioRes{1,k})
                 allAudioRes{rowSingles, k}{i} = allAudioRes{1, k}{i}(:,j);
             end
