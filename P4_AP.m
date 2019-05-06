@@ -36,20 +36,17 @@ for j = 1:OverallSize(1)
 end
 res11 = res;
 %% Eval model vs. data
-addpath(genpath("./audio"))
-[HelpTest,Fs] = audioread('Hjælp_GMM_refinement.wav');
-[skrigTest,Fs] = audioread('Skrig_GMM_refinement.wav');
 recObj = audiorecorder(8000, 16, 1);
+while true
+    recordblocking(recObj, 2);
+    liveData = getaudiodata(recObj, 'double');
+    signalApmlitude = rms(liveData);
+    if signalApmlitude>0.15
+        disp("min reached")
+        Live = {audioProcessing(liveData, 8000)};
+        [loglikFromAllModels, bestModel] = evalModels(Live, AllAudioData);
+        assignin("base", "bestModel", bestModel);
+        disp(bestModel)
+    end
 
-disp('Start speaking.');
-recordblocking(recObj, 2);
-disp('End of Recording.');
-
-liveData = getaudiodata(recObj, 'double');
-Live = {audioProcessing(liveData, 8000)};
-
-ht = {audioProcessing(HelpTest, 8000)};
-
-st = {audioProcessing(skrigTest, 8000)};
-
-[loglikFromAllModels, bestModel] = evalModels(Live, GmmModels);
+end 
