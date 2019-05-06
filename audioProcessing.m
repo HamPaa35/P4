@@ -1,16 +1,14 @@
 % Function for running all AP methods on a signal and returning them in a
 % matrix.
 function dataInMatrix = audioProcessing(soundToAnalyse, fs)
-    a = 0; % minimum value after mapping
-    b = 1; % maximum value after mapping
     % Converts Stereo signals into mono signals.
     if size(soundToAnalyse,2)>1
         soundToAnalyse= sum(soundToAnalyse, 2) / size(soundToAnalyse, 2);
     end
     % Harmonic to noise ratio
     hr = harmonicRatio(soundToAnalyse, fs);
-    % Pitch
-    fTemp = pitch(soundToAnalyse, fs);
+    % Pitch using Normalized Correlation Function
+    fTemp = pitch(soundToAnalyse, fs, 'Range',[50, fs/2]);
     hrSize = size(hr);
     fTempSize = size(fTemp);
     sizeDifference = hrSize(1) - fTempSize(1);
@@ -20,7 +18,7 @@ function dataInMatrix = audioProcessing(soundToAnalyse, fs)
     centroid = spectralCentroid(soundToAnalyse, fs);
     %Flux
     flux = spectralFlux(soundToAnalyse,fs);
-    % Roll off Point
+    % Roll off Point (95%)
     rolloffPoint = spectralRolloffPoint(soundToAnalyse,fs);
     % Spectral flatness
     flatness = spectralFlatness(soundToAnalyse,fs);
