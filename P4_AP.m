@@ -11,6 +11,7 @@ h = dataRetrieval();
 % ModelButtom4 = trainModels(h,7);
 % ModelButtom3 = trainModels(h,8);
 % ModelButtom2 = trainModels(h,9);
+% ModelPitch = trainModels(h,11);
 % UltraAudioData = trainModels(ultra,1);
 %% Eval test
 modelRow = 11;
