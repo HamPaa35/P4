@@ -24,7 +24,7 @@ for j = 1:OverallSize(2)
 end
 disp('du ser godt ud')
 
-%% Optælling
+%% Optï¿½lling
 OverallSize = size(z6);
 res = 0;
 for j = 1:OverallSize(1)
@@ -36,24 +36,30 @@ for j = 1:OverallSize(1)
 end
 res11 = res;
 %% Eval model vs. data
- clear a;
- addpath(genpath("./audio"))
- recObj = audiorecorder(8000, 16, 1);
- 
- disp('Start speaking.');
- recordblocking(recObj, 2);
- disp('End of Recording.');
- 
- liveData = getaudiodata(recObj, 'double');
- Live = {audioProcessing(liveData, 8000)}; 
- [loglikFromAllModels, bestModel] = evalModels(Live, AllAudioData);
-a = arduino('COM4', 'Uno');
-if bestModel == 3
-writeDigitalPin(a, 'D12', 1);
-end
-if bestModel == 3
-    writeDigitalPin(a, 'D11', 1);
-end
-if bestModel == 3
-writeDigitalPin(a, 'D10', 1);
+clear a;
+recObj = audiorecorder(8000, 16, 1);
+while true
+    recordblocking(recObj, 2);
+    liveData = getaudiodata(recObj, 'double');
+    signalApmlitude = rms(liveData);
+    if signalApmlitude>0.15
+        disp("min reached")
+        Live = {audioProcessing(liveData, 8000)};
+        [loglikFromAllModels, bestModel] = evalModels(Live, AllAudioData);
+        assignin("base", "bestModel", bestModel);
+        disp(bestModel)
+
+
+       a = arduino('COM4', 'Uno');
+       if bestModel == 3
+       writeDigitalPin(a, 'D12', 1);
+       end
+       if bestModel == 3
+           writeDigitalPin(a, 'D11', 1);
+       end
+       if bestModel == 3
+       writeDigitalPin(a, 'D10', 1);
+       end
+    end
+
 end
