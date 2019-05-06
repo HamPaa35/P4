@@ -2,16 +2,17 @@
 % 1 = scream 2 = help 3 = fall
 h = dataRetrieval();
 %% Train Gmm-Hmm model
-% AllAudioData = trainModels(h,1);
-% ModelTop5 = trainModels(h,2);
-% ModelTop4 = trainModels(h,3);
-% ModelTop3 = trainModels(h,4);
-% ModelTop2 = trainModels(h,5);
-% ModelButtom5 = trainModels(h,6);
-% ModelButtom4 = trainModels(h,7);
-% ModelButtom3 = trainModels(h,8);
-% ModelButtom2 = trainModels(h,9);
-% UltraAudioData = trainModels(ultra,1);
+AllAudioData = trainModels(h,1);
+ModelTop5 = trainModels(h,2);
+ModelTop4 = trainModels(h,3);
+ModelTop3 = trainModels(h,4);
+ModelTop2 = trainModels(h,5);
+ModelButtom5 = trainModels(h,6);
+ModelButtom4 = trainModels(h,7);
+ModelButtom3 = trainModels(h,8);
+ModelButtom2 = trainModels(h,9);
+ModelButtom2 = trainModels(h,11);
+UltraAudioData = trainModels(ultra,1);
 %% Eval test
 modelRow = 11;
 OverallSize = size(e);
