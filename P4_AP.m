@@ -14,13 +14,30 @@ h = dataRetrieval();
 % ModelPitch = trainModels(h,11);
 % UltraAudioData = trainModels(ultra,1);
 %% Eval test
-modelRow = 11;
+%allModels = {AllAudioData, ModelTop5, ModelTop4, ModelTop3, ModelTop2, ModelButtom5, ModelButtom4, ModelButtom3, ModelButtom2, ModelsHr, ModelPitch, ModelsRoll, ModelsFlux, ModelsCen, ModelsFlat}
+% e = dataRetrieval();
 OverallSize = size(e);
-for j = 1:OverallSize(2)
-    smallerSize = size(e{modelRow,j});
-    for i = 1:smallerSize(2)
-        [~, bestModel] = evalModels(e{modelRow, j}(1, i), Models11);
-        z11(j,i) = bestModel;
+ModelSize = size(allModels);
+modelRow = ModelSize(2);
+precision = zeros(3,15);
+z = zeros(3,110);
+for k = 1:ModelSize(2)
+    for j = 1:OverallSize(1, 2)
+        smallerSize = size(e{modelRow,j});
+        for i = 1:smallerSize(2)
+            [~, bestModel] = evalModels(e{k, j}(1, i), allModels{1, k});
+            z(j,i) = bestModel;
+            OverallSize1 = size(z);
+            for L = 1:OverallSize1(1)
+                res = 0;
+                for m = 1:OverallSize1(2)
+                    if L == z(L, m)
+                        res=res++1;
+                    end
+                    precision(L, k) = res;
+                end
+            end
+        end
     end
 end
 disp('du ser godt ud')
@@ -36,6 +53,7 @@ for j = 1:OverallSize(1)
     end
 end
 res11 = res;
+
 %% Eval model vs. data
 recObj = audiorecorder(8000, 16, 1);
 while true
