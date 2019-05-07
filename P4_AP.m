@@ -20,9 +20,29 @@ OverallSize = size(e);
 ModelSize = size(allModels);
 modelRow = ModelSize(2);
 precision = zeros(3,15);
+false = zeros(3,15);
 z = zeros(3,110);
-for k = 1:ModelSize(2)
-    for j = 1:OverallSize(1, 2)
+for k = 1:15
+    sf = 0;
+    hf = 0;
+    ff = 0;
+    for j = 1:OverallSize(2)
+        smallerSize = size(e{modelRow,j});
+        for i = 1:smallerSize(2)
+            [~, bestModel] = evalModels(e{k, j}(1, i), allModels{1, k});
+            z(j,i) = bestModel;
+        end
+    end
+    rawData{1,k} = z;
+end
+        
+
+%%
+for k = 1:2
+    sf = 0;
+    hf = 0;
+    ff = 0;
+    for j = 1:OverallSize(2)
         smallerSize = size(e{modelRow,j});
         for i = 1:smallerSize(2)
             [~, bestModel] = evalModels(e{k, j}(1, i), allModels{1, k});
@@ -32,13 +52,25 @@ for k = 1:ModelSize(2)
                 res = 0;
                 for m = 1:OverallSize1(2)
                     if L == z(L, m)
-                        res=res++1;
-                    end
-                    precision(L, k) = res;
+                        res=res+1;
+                    else
+                        if z(L,m) == 1
+                            sf = sf + 1;
+                        elseif z(L,m) == 2
+                            hf = hf + 1;
+                        else
+                            ff = ff + 1;
+                        end
+                    end 
                 end
+                precision(L, k) = res;
             end
+            
         end
     end
+    false(1, k) = sf;
+    false(2, k) = hf;
+    false(3, k) = ff;
 end
 disp('du ser godt ud')
 
@@ -68,9 +100,8 @@ while true
         Live = {audioProcessing(liveData, 8000)};
         [loglikFromAllModels, bestModel] = evalModels(Live, AllAudioData);
         disp(bestModel)
-
-% Lights up LED depending on which type of emergency has been registered.
     end
+% Lights up LED depending on which type of emergency has been registered.
        a = arduino('COM4', 'Uno');
        if bestModel == 1
        writeDigitalPin(a, 'D12', 1);
