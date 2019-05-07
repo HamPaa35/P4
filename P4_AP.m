@@ -37,43 +37,35 @@ for k = 1:15
 end
         
 
-%%
-for k = 1:2
+%% Sort data
+rawDataSize = size(rawData);
+bestModelRawDataSize = size(rawData{1,1});
+precision = zeros(3,15);
+false = zeros(3,15);
+for k = 1:rawDataSize(2)
     sf = 0;
     hf = 0;
     ff = 0;
-    for j = 1:OverallSize(2)
-        smallerSize = size(e{modelRow,j});
-        for i = 1:smallerSize(2)
-            [~, bestModel] = evalModels(e{k, j}(1, i), allModels{1, k});
-            z(j,i) = bestModel;
-            OverallSize1 = size(z);
-            for L = 1:OverallSize1(1)
-                res = 0;
-                for m = 1:OverallSize1(2)
-                    if L == z(L, m)
-                        res=res+1;
-                    else
-                        if z(L,m) == 1
-                            sf = sf + 1;
-                        elseif z(L,m) == 2
-                            hf = hf + 1;
-                        else
-                            ff = ff + 1;
-                        end
-                    end 
-                end
-                precision(L, k) = res;
+    for j = 1:bestModelRawDataSize(1)
+        res = 0;
+        for i = 1:bestModelRawDataSize(2)
+            if j == rawData{1, k}(j,i)
+                res=res+1;
+            elseif rawData{1, k}(j,i) == 1
+                sf = sf + 1;
+            elseif rawData{1, k}(j,i) == 2
+                hf = hf + 1;
+            elseif rawData{1, k}(j,i) == 3
+                ff = ff + 1;
             end
-            
         end
+        precision(j, k) = res;
     end
     false(1, k) = sf;
     false(2, k) = hf;
     false(3, k) = ff;
 end
-disp('du ser godt ud')
-
+disp('du ser godt ud') 
 %% Opt�lling
 OverallSize = size(z6);
 res = 0;
