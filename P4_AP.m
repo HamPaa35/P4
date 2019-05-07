@@ -38,28 +38,31 @@ res11 = res;
 %% Eval model vs. data
 clear a;
 recObj = audiorecorder(8000, 16, 1);
+disp("qwe");
 while true
+    disp("efefe")
     recordblocking(recObj, 2);
     liveData = getaudiodata(recObj, 'double');
     signalApmlitude = rms(liveData);
-    if signalApmlitude>0.15
+    disp(signalApmlitude)
+    if signalApmlitude<0.15
         disp("min reached")
         Live = {audioProcessing(liveData, 8000)};
         [loglikFromAllModels, bestModel] = evalModels(Live, AllAudioData);
-        assignin("base", "bestModel", bestModel);
         disp(bestModel)
 
 
+    end
        a = arduino('COM4', 'Uno');
-       if bestModel == 3
+       if bestModel == 1
        writeDigitalPin(a, 'D12', 1);
        end
-       if bestModel == 3
+       if bestModel == 2
            writeDigitalPin(a, 'D11', 1);
        end
        if bestModel == 3
        writeDigitalPin(a, 'D10', 1);
        end
-    end
-
+       pause(1);
+       clear a;
 end
