@@ -36,11 +36,10 @@ for j = 1:OverallSize(1)
 end
 res11 = res;
 %% Eval model vs. data
-clear a;
+clear a; %For the arduino
 recObj = audiorecorder(8000, 16, 1);
-disp("qwe");
 while true
-    disp("efefe")
+    disp("Recording...");
     recordblocking(recObj, 2);
     liveData = getaudiodata(recObj, 'double');
     signalApmlitude = rms(liveData);
@@ -51,18 +50,19 @@ while true
         [loglikFromAllModels, bestModel] = evalModels(Live, AllAudioData);
         disp(bestModel)
 
-
+% Lights up LED depending on which type of emergency has been registered. 
     end
        a = arduino('COM4', 'Uno');
        if bestModel == 1
        writeDigitalPin(a, 'D12', 1);
        end
        if bestModel == 2
-           writeDigitalPin(a, 'D11', 1);
+       writeDigitalPin(a, 'D11', 1);
        end
        if bestModel == 3
        writeDigitalPin(a, 'D10', 1);
        end
        pause(1);
        clear a;
+       disp("Done recording!");
 end
