@@ -33,7 +33,7 @@ evalAudioOverallSize = size(e);
 ModelSize = size(allModels);
 z = zeros(3,110);
 % outer loop that goes through the audio data combinations
-for k = 1:evalAudioOverallSize
+for k = 1:evalAudioOverallSize(1)
     % Loops through the data for each sound type
     for j = 1:evalAudioOverallSize(2)
         soundTypeSize = size(e{1,j});
