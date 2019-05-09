@@ -1,7 +1,5 @@
 classdef Model
-    %MODEL Summary of this class goes here
-    %   Detailed explanation goes here
-    
+    %MODEL This class is for holding data for GMM and HMM model
     properties
         p_start
         A
